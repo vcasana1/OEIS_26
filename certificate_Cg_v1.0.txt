@@ -1,0 +1,21 @@
+Decimal enclosure for C_g
+Recorded computation from the OEIS preparation session, November 11, 2026
+
+Method: mpmath 1.4.1 interval arithmetic, 150 decimal digits of working
+precision, N = 180 terms of the even-zeta series. The Bernoulli numbers
+were generated as exact rational numbers. The one-sided analytic
+truncation bound was 2 * 4^(-180).
+
+Lower endpoint and upper endpoint, scaled by 10^100 and floored, gave
+the same integer:
+D = 7437948618394005442036419946345806610252643319729172229603543808135540028677299838717570371013522332
+
+Width of the working enclosure before scaling, as recorded: about
+8.51591968e-109.
+
+Exact decimal enclosure implied by the equal floors:
+D/10^100 <= C_g < (D+1)/10^100.
+
+The digits in the article and in the OEIS draft were transcribed from D.
+The historical Castor and Pollux I certificates cover separate objects
+and are documented in Appendix A.

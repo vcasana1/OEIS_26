@@ -1,0 +1,13 @@
+zeros of G with Im s <= 40: 6;  points 1/2 + i t: 6
+fine grid: 253 (Re s) x 889 (Im s) points, 6 s
+max |G - A - (pi/s) cot(pi s/2) zeta| on the fine grid = 1.101e-11
+min |A| on the fine grid = 0.072103 at s = 0.05 + 40.00 i;  max |A| = 2.1831
+|G - A| at the six points 1/2 + i t: 1.1e-12 2.7e-12 4.2e-12 5.5e-12 6.5e-12 1.0e-11
+|G| at the six zeros of G (double precision evaluator): 4.1e-12 7.9e-12 1.3e-11 1.4e-11 2.1e-11 2.8e-11
+fig_G_surface.png: 6 marked mesh vertices, largest plotted marker height 2.814e-11
+wrote fig_A_surface.png
+fig_GminusA_surface.png: 6 marked mesh vertices, largest plotted marker height 1.026e-11
+fig_zeta_surface.png: 6 marked mesh vertices, largest plotted marker height 6.667e-15
+A near the real axis: 1354 x 407 points; real zeros shown: -2.0000 -1.0000 3.0428 5.0981 7.1478 9.1892
+fig_A_real_surface.png: 6 marked mesh vertices, largest plotted marker height 6.983e-13
+wrote fig_zero_map.png

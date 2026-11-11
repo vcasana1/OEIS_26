@@ -1,0 +1,991 @@
+\documentclass[11pt,leqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,graphicx,array,booktabs,longtable,listings,xcolor}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes},
+  pdfauthor={V\'ictor Casa\~na-Giner},
+  pdfsubject={A log-sine product at primes, Mellin transforms, and numerical certificates}}
+\setlength{\textwidth}{32pc}
+\setlength{\textheight}{54pc}
+\calclayout
+\raggedbottom
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\Cg}{C_{\mathrm g}}
+\newcommand{\R}{\operatorname{Re}}
+\newcommand{\I}{\operatorname{Im}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\decfirst}{7437948618\,3940054420\,3641994634\,5806610252\,6433197291}
+\newcommand{\decsecond}{7222960354\,3808135540\,0286772998\,3871757037\,1013522332}
+\lstset{language=Python,basicstyle=\ttfamily\scriptsize,columns=fullflexible,
+  keepspaces=true,breaklines=true,showstringspaces=false,numberstyle=\tiny,
+  numbers=left,numbersep=6pt,xleftmargin=2em,frame=leftline,
+  rulecolor=\color{black!22},aboveskip=8pt,belowskip=8pt}
+\newcommand{\sourcefigure}[3]{%
+  \par\medskip\noindent
+  \begin{minipage}{\linewidth}
+  \centering
+  \includegraphics[width=#1,height=.36\textheight,keepaspectratio]{castor_v5/#2}
+  \refstepcounter{figure}\par\smallskip
+  {\small\raggedright\textsc{Figure \thefigure.} #3\par}
+  \end{minipage}\par\medskip}
+\title[A log-sine analogue of Euler's constant]{A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes}
+\author{V\'ictor Casa\~na-Giner}
+\date{November 11, 2026}
+\subjclass[2020]{Primary 11M06, 11K65; Secondary 11N37, 44A15}
+\keywords{Euler's constant, sine product, fractional parts, Mellin transform, Riemann zeta function, certified computation}
+\begin{document}
+\begin{abstract}
+For prime $p$ we study $P(p)=\prod_{k=2}^{p-1}\sin(\pi p/k)$.
+Its logarithmic size is $\log|P(p)|=-\Cg p+O(p^{1/3}\log^2 p)$, where
+$\Cg=0.74379486183940054420\ldots$. The rate per factor in the
+limit is $e^{-\Cg}=0.47530676524152038801\ldots$. With the
+denominators restricted to $k\le\sqrt p$, the logarithmic size is
+$-(\log2)\sqrt p+O(p^{1/3}\log^2p)$. The means $1-\gamma$ and $\Cg$ are obtained from two observables of the
+same fractional-part distribution. We relate $\Cg$ to the Mellin
+transforms $G$ and $A$, derive a geometrically convergent series in
+even zeta values, and record an enclosure fixing the first $100$
+decimal digits of $\Cg$.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+For integers $n\ge2$ put
+\begin{equation}\label{eq:product}
+ P(n)=\prod_{k=2}^{n-1}\sin\left(\frac{\pi n}{k}\right),\qquad
+ \widetilde P(n)=\prod_{2\le k\le\sqrt n}\sin\left(\frac{\pi n}{k}\right).
+\end{equation}
+The empty products are $P(2)$, $\widetilde P(2)$ and $\widetilde P(3)$,
+each with value $1$ by convention. A factor vanishes exactly when $k$ divides
+$n$, and every composite $n$ has a divisor in $[2,\sqrt n]$.
+Thus each product is nonzero exactly when $n$ is prime. For primes $p$ the logarithm of the absolute
+value of the product has the asymptotic form
+\begin{equation}\label{eq:decay}
+ \log|P(p)|=-\Cg p+O(p^{1/3}\log^2p),
+ \qquad \Cg=0.74379486183940054420\ldots .
+\end{equation}
+Consequently $|P(p)|^{1/p}\to e^{-\Cg}=0.47530676524152038801\ldots$.
+The logarithmic decay rate is $\Cg$, and $e^{-\Cg}$ is the
+exponential base. For the product truncated at the square root,
+\begin{equation}\label{eq:shortdecay}
+ \log|\widetilde P(p)|=-(\log2)\sqrt p+O(p^{1/3}\log^2p),
+ \qquad |\widetilde P(p)|^{1/\sqrt p}\longrightarrow\frac12 .
+\end{equation}
+The constants in \eqref{eq:decay} and \eqref{eq:shortdecay} arise
+from different distributions of the fractional parts.
+
+Let $U$ be uniform on $(0,1)$ and put $X=\{1/U\}$. This is the
+limiting distribution of the fractional parts $\{n/k\}$ for the
+full product $P(n)$. The mean of $X$ is $1-\gamma$, where $\gamma$ is
+Euler's constant, and the mean of $-\log(\sin\pi X)$ is $\Cg$. These
+two means occur in a single complex expectation:
+\begin{equation}\label{eq:eulerlink}
+ \E\operatorname{Log}(1-e^{2\pi iX})
+   =(\log 2-\Cg)+i\pi\left(\frac12-\gamma\right).
+\end{equation}
+Here $\operatorname{Log}$ is the principal logarithm. This identity is
+the sense in which $\Cg$ is a log-sine analogue of Euler's constant.
+
+For real $u\notin\mathbb Z$ put
+\begin{equation}\label{eq:h}
+h(u)=\log|2\sin(\pi u)| .
+\end{equation}
+The transform of $h$ on $[1,\infty)$ is
+\begin{equation}\label{eq:G}
+G(s)=\int_1^\infty h(u)\,u^{-s-1}\,du\qquad(\operatorname{Re}s>0).
+\end{equation}
+There is also a parallel at the level of Mellin transforms. Put
+\[
+ \mathcal M_{\mathrm{frac}}(s)=\int_1^\infty\{u\}\,u^{-s-1}\,du
+ \qquad(\R s>0).
+\]
+For $\R s>1$, integrating $\lfloor u\rfloor=\sum_{n\le u}1$
+termwise gives
+\[
+ \zeta(s)=s\int_1^\infty\lfloor u\rfloor u^{-s-1}\,du
+         =\frac{s}{s-1}-s\mathcal M_{\mathrm{frac}}(s).
+\]
+The integral defining $\mathcal M_{\mathrm{frac}}$ is holomorphic on
+$\R s>0$ because $\{u\}$ is bounded and the integral converges locally
+uniformly there. The formula thus continues $\zeta$ meromorphically
+to that half-plane. Comparing constant terms at $s=1$
+with the Laurent expansion of $\zeta$ \cite[(25.2.4)--(25.2.5)]{dlmf}
+gives $\mathcal M_{\mathrm{frac}}(1)=1-\gamma$. Likewise,
+$\log(2)/s-G(s)$ is the transform of $-\log|\sin(\pi u)|$
+on $[1,\infty)$ and takes the value $\Cg$ at $s=1$ by
+\eqref{eq:Cint}. Both values are obtained with the weight $u^{-2}$.
+
+For $0<\operatorname{Re}s<2$ let
+\begin{equation}\label{eq:A}
+A(s)=\frac{\log(2\pi)}s+\frac1{s^2}-\int_0^1\log\frac{\sin(\pi u)}{\pi u}\,u^{-s-1}\,du .
+\end{equation}
+In particular $\Cg=\log2-G(1)$. As an identity between meromorphic
+functions,
+\begin{equation}\label{eq:GAzeta}
+G(s)-A(s)=\frac\pi s\cot\Bigl(\frac{\pi s}2\Bigr)\zeta(s) .
+\end{equation}
+For non-real $s$, equality $G(s)=A(s)$ is equivalent to $\zeta(s)=0$,
+with the same multiplicities. Thus if every non-real zero of
+$\zeta$ has real part $\tfrac12$, the non-real solutions of $G=A$ are
+of the form $\tfrac12+it$ with $t\ne0$. The real solutions are the odd
+integers other than $1$. At $s=1$ the zero of the cotangent cancels the
+pole of $\zeta$, giving $G(1)-A(1)=-\pi^2/2$.
+
+\section{Notation and constants}
+Throughout, $s=\sigma+it$ with $\sigma,t$ real. The index $n$ is an
+integer, $p$ is a prime, and $k$ and $m$ are summation indices.
+The fractional part of $x$ is $\{x\}=x-\lfloor x\rfloor$.
+We use $y$ for a variable in $(0,1)$ in the fractional-part
+distribution. All real logarithms are natural logarithms.
+\begin{center}
+ \small
+ \begin{tabular}{@{}lll@{}}
+ \toprule
+ Symbol & Meaning & Initial decimals\\
+ \midrule
+ $\gamma$ & Euler's constant & $0.57721566490153286060\ldots$\\
+ $\Cg$ & Logarithmic decay rate of $|P(p)|$ & $0.74379486183940054420\ldots$\\
+ $e^{-\Cg}$ & Exponential base of $|P(p)|$ & $0.47530676524152038801\ldots$\\
+ $\log2$ & Logarithmic decay rate of $|\widetilde P(p)|$ & $0.69314718055994530941\ldots$\\
+ $G(1)$ & $\log 2-\Cg$ & $-0.05064768127945523478\ldots$\\
+ $A(1)$ & $G(1)+\pi^2/2$ & $4.88415451926522407463\ldots$\\
+ \bottomrule
+ \end{tabular}
+ \par\smallskip
+ \refstepcounter{table}
+ \textsc{Table \thetable.} The constants used in the product and its Mellin representation.
+\end{center}
+
+
+{\small
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{.37\linewidth}
+  >{\raggedright\arraybackslash}p{\dimexpr.63\linewidth-2\tabcolsep\relax}@{}}
+\caption{Notation used in the proofs and appendices.}\label{tab:symbols}\\
+\toprule
+Symbol & Meaning\\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Meaning\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$n,p,k,m,j,b,l,e_q$ & Integer arguments and indices. In the divisor bound $q$ is prime and $e_q$ is its exponent in $n$.\\
+$P,\widetilde P,d(n),Y$ & Full product, square-root product, divisor count, and cutoff in the counting estimate.\\
+$U,X,y,y_k$ & Uniform variable on $(0,1)$, its image $\{1/U\}$, a fractional-part variable, and $\{n/k\}$.\\
+$w,F$ & Density of $X$ and its distribution function.\\
+$\mu,\nu,W,T,D_\mu,\tau$ & Sample measure, signed discrepancy measure, comparison density, comparison mass, uniform discrepancy, and counting threshold.\\
+$f,f_\delta,\delta,I,m_0$ & Logarithmic observable, its clipped form, endpoint cutoff, uniform integral of $f$, and a finite sum or product endpoint.\\
+$\gamma,\Cg,e^{-\Cg},\log2$ & Euler's constant, the full-product decay rate, its exponential base, and the square-root decay rate.\\
+$s,\sigma,t,i,u,v,x,z,\xi$ & Complex argument, its real and imaginary coordinates, the imaginary unit, and local integration and function arguments. In the principal-value calculation $z=s/2$.\\
+$\log,\operatorname{Log},\operatorname{PV}$ & Real natural logarithm, principal complex logarithm, and Cauchy principal value.\\
+$h,\ell,G,A$ & Log-sine kernel, regularized logarithm, and the two functions in \eqref{eq:G} and \eqref{eq:A}.\\
+$\mathcal M_{\mathrm{frac}}$ & Mellin transform of the fractional part on $[1,\infty)$.\\
+$\zeta,\Gamma,\Sigma_{2k},J(s),\psi$ & Zeta and gamma functions, even zeta values, the scalar Mellin integral, and the digamma function.\\
+$N_C,\Cg^{[N_C]},B_{2k}$ & Number of terms in the series for $\Cg$, its partial value, and the even Bernoulli numbers.\\
+$M_C,a,R_{N_C,M_C}$ & Cutoff in the elementary series, the first omitted index $a=M_C+1$, and the remainder of the accelerated formula.\\
+$D_{100},L_{180},U_{180}$ & Integer formed by the first 100 fractional digits, and the endpoints enclosing the 180-term partial value.\\
+$\mathcal K,\mathcal K_\alpha,H$ & Periodic kernel, its Abel regularization with $0<\alpha<1$, and its Mellin integral.\\
+$\mathsf M,\mathsf N,\mathsf L,x_b$ & Numbers of harmonics, periods, and midpoint nodes in the Rouch\'e certificate, and its midpoint nodes.\\
+$\mathcal K_{\mathsf M},H_{\mathsf M,\mathsf N},
+ H_{\mathsf M,\mathsf N,\mathsf L}$ & Kernel cutoff, cutoff integral, and midpoint approximation.\\
+$B_0,B_1,B_2,Z,E_0,E_1$ & Bounds for the kernel and its derivatives, an upper bound for a sum of inverse powers, and the errors for $H$ and $H'$.\\
+$s_0,\varsigma,\eta_0,\eta_1$ & Disc center and radius, and the approximations to $H(s_0)$ and $H'(s_0)$.\\
+$Q_0,\mathcal Q,\mathfrak r_k,c_k,g_\psi$ & Digamma remainder series, upper bound for $\R(sA(s))$, $\R(s/(2k-s))$, $\Sigma_{2k}-1$, and the nonnegative digamma comparison integrand.\\
+$\varepsilon,\rho$ & Exponent in the divisor bound and cutoff for the principal value.\\
+$u_0,\theta,\lambda,\chi$ & Tail endpoint, inverse-power exponent, local integration variable, and midpoint-rule integrand.\\
+$g_{jk},r,\beta$ & Greatest common divisor $\gcd(j,k)$, positive integer multiple, and frequency in the Gram calculation.\\
+$z_b^G,z_b^A,n_G,n_A,\mathcal E_G,\mathcal E_A$ & Lists of computed zeros, their lengths, and the exponential sums.\\
+\end{longtable}
+}
+
+\section{The distribution and the arithmetic product}
+Splitting $1/U$ into intervals $[m,m+1)$ gives the density
+\begin{equation}\label{eq:density}
+ w(y)=\sum_{m=1}^{\infty}\frac{1}{(m+y)^2},\qquad 0<y<1 .
+\end{equation}
+Indeed the change of variables $u=1/(m+y)$ on each interval of
+$U$ contributes $(m+y)^{-2}\,dy$. The sum of the integrals of
+these terms is $1$. This distribution for $\{n/k\}$ is treated
+by Saffari and Vaughan \cite[Corollary 1.1]{saffariVaughan}
+and Bensimhoun \cite[Examples 3--4]{bensimhoun}. Termwise integration of
+$yw(y)$ up to the summand $m=m_0$ gives
+\[
+ \sum_{m=1}^{m_0}\left(\log\frac{m+1}{m}-\frac1{m+1}\right)
+ =1+\log(m_0+1)-\sum_{m=1}^{m_0+1}\frac1m .
+\]
+Its limit is $1-\gamma$. Integrating the log-sine observable gives
+\begin{equation}\label{eq:Cint}
+ \Cg=-\int_0^1\log(\sin\pi y)\,w(y)\,dy
+     =-\int_1^\infty\frac{\log|\sin(\pi u)|}{u^2}\,du .
+\end{equation}
+The first integral converges because $w$ is bounded and the endpoint
+singularities are logarithmic. The second equality follows by splitting
+the integral on $[1,\infty)$ into unit intervals. For $0<y<1$ the
+identity $1-e^{2\pi iy}=2\sin(\pi y)e^{i\pi(y-1/2)}$ has argument
+in $(-\pi/2,\pi/2)$. Taking the mean of its principal logarithm gives
+\eqref{eq:eulerlink}.
+
+\begin{lemma}[Discrepancy and the logarithmic endpoints]\label{lem:arithmetic}
+Let $n\ge3$, and let $\mu$ count a finite list of points in
+$[1/n,1-1/n]$, with multiplicities. Let $W$ be a bounded nonnegative
+density of integral $1$ on $[0,1]$, and let $T>0$. Put
+\[
+ D_\mu=\sup_{0\le\tau\le1}\left|\mu([0,\tau])-T\int_0^\tau W(y)\,dy\right|.
+\]
+For $f(y)=\log(\sin\pi y)$ and $1/n\le\delta<1/2$,
+\[
+ \int f\,d\mu=T\int_0^1 f(y)W(y)\,dy+O((D_\mu+T\delta)\log n),
+\]
+with an implied constant depending only on an upper bound for $W$.
+\end{lemma}
+
+\begin{proof}
+Define $f_\delta=f$ on $[\delta,1-\delta]$ and extend it constantly
+to each endpoint of $[0,1]$. Since
+$f_\delta(1)=f(1-\delta)=\log(\sin\pi\delta)$, the inequality
+$\sin(\pi y)\ge2\min(y,1-y)$ and the monotonicity of $f$ on each
+side of $1/2$ give
+\[
+ |f_\delta(1)|+\int_0^1|f_\delta'(y)|\,dy=O(\log n).
+\]
+For $\nu=\mu-TW(y)\,dy$, insert
+$f_\delta(y)=f_\delta(1)-\int_y^1 f_\delta'(\tau)\,d\tau$ in
+$\int f_\delta\,d\nu$ and interchange the finite-measure integrals.
+The result is bounded in modulus by
+$D_\mu\bigl(|f_\delta(1)|+\int_0^1|f_\delta'|\bigr)$.
+The two endpoint intervals contain $O(T\delta+D_\mu)$ sample points
+by the definition of $D_\mu$ and boundedness of $W$. Both $f$ and
+$f_\delta$ have size $O(\log n)$ at those points, since the
+sample lies in $[1/n,1-1/n]$ and $\delta\ge1/n$. On the integral
+side,
+$\int_0^\delta|\log(2y)|\,dy=O(\delta(1+|\log\delta|))$,
+with the same bound at the other endpoint by reflection. Thus
+replacing $f_\delta$ by $f$ costs $O((T\delta+D_\mu)\log n)$ in the
+sample sum and $O(T\delta\log n)$ in the integral against
+$TW(y)\,dy$. These are the claimed bounds.
+\end{proof}
+
+\begin{theorem}[Arithmetic sampling]\label{thm:arithmetic}
+Let $d(n)$ be the number of positive divisors of $n$. For every integer
+$n\ge2$, with absolute implied constants,
+\begin{align}
+ \sum_{\substack{2\le k\le n-1\\k\nmid n}}
+    \log\left|\sin\frac{\pi n}{k}\right|
+  &=-\Cg n+O\bigl(n^{1/3}\log^2n+d(n)\log n\bigr),
+   \label{eq:arithmetic}\\
+ \sum_{\substack{2\le k\le\sqrt n\\k\nmid n}}
+    \log\left|\sin\frac{\pi n}{k}\right|
+  &=-(\log2)\sqrt n+O\bigl(n^{1/3}\log^2n+d(n)\log n\bigr).
+   \label{eq:shortarithmetic}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+For the full range, let
+$F(\tau)=\int_0^\tau w(y)\,dy=\sum_{m\ge1}\tau/[m(m+\tau)]$
+for $0\le\tau\le1$.
+Saffari and Vaughan \cite[Corollary 1.1, equation (1.9)]{saffariVaughan}
+give
+\[
+ \#\{1\le k\le n:\{n/k\}<\tau\}=nF(\tau)+O(n^{1/3}\log n)
+ \qquad(0\le\tau\le1)
+\]
+uniformly in $\tau$. The points at zero are the $d(n)$ divisors of $n$,
+including $1$ and $n$. Passing to right limits in the counting
+estimate and removing the divisors gives
+$D_\mu=O(n^{1/3}\log n+d(n))$ for $T=n$ and $W=w$ in
+Lemma~\ref{lem:arithmetic}. The endpoint $\tau=1$ follows from the
+count of the remaining $n-d(n)$ points.
+
+For the square-root range, Saffari and Vaughan
+\cite[Corollary 1.3, equation (1.11)]{saffariVaughan} give, for
+$Y=o(n)$, the uniform bound
+\[
+ \#\{1\le k\le Y:\{n/k\}<\tau\}
+ =Y\tau+O(Y^2/n+n^{1/3}\log n)\qquad(0\le\tau\le1).
+\]
+With $Y=\sqrt n$ the first error term is $1$. As before, taking
+right limits and removing the divisors, including $1$, gives
+$D_\mu=O(n^{1/3}\log n+d(n))$, this time for $T=\sqrt n$ and $W=1$.
+At $\tau=1$ the remaining count is
+\[
+ \mu([0,1])=\lfloor\sqrt n\rfloor-\#\{k:1\le k\le\sqrt n,\ k\mid n\}.
+\]
+Thus $|\mu([0,1])-\sqrt n|\le d(n)+1$.
+The bounds also give the distributional
+limits in each range, since $D_\mu/T\to0$. For the latter assertion
+one may use the elementary divisor bound $d(n)=O_\varepsilon(n^\varepsilon)$
+for any $\varepsilon>0$. Indeed, if $n=\prod_q q^{e_q}$, then
+$e_q+1\le 2^{e_q}\le q^{\varepsilon e_q}$ for $q\ge2^{1/\varepsilon}$.
+For each of the finitely many smaller primes $q$, the ratio
+$(e_q+1)/q^{\varepsilon e_q}$ is bounded over integers $e_q\ge0$.
+Multiplication gives the bound.
+
+In either range $y_k=\{n/k\}$ for $k\nmid n$ satisfies
+$\min(y_k,1-y_k)\ge1/k\ge1/n$. Writing
+$n/k=\lfloor n/k\rfloor+y_k$ gives
+$\sin(\pi n/k)=(-1)^{\lfloor n/k\rfloor}\sin(\pi y_k)$, and hence
+$\log|\sin(\pi n/k)|=\log(\sin(\pi y_k))$ because $0<y_k<1$.
+Use Lemma~\ref{lem:arithmetic}
+with $\delta=n^{-2/3}$ for $T=n$, and with $\delta=n^{-1/6}$ for
+$T=\sqrt n$. In both cases $T\delta=n^{1/3}$. The finitely
+many $n$ for which the prescribed $\delta$ is at least $1/2$
+are covered by enlarging the implied constant. The full-range
+integral is $-\Cg$ by \eqref{eq:Cint}. In the square-root range
+write $I=\int_0^1\log(\sin\pi y)\,dy$. By a shift of half a
+period, $\int_0^1\log|\cos(\pi y)|\,dy=I$. The double-angle
+formula then gives $2I=I-\log2$, because
+$\int_0^1\log|\sin(2\pi y)|\,dy=I$. This gives $I=-\log2$
+and proves \eqref{eq:shortarithmetic}.
+\end{proof}
+
+For $n=p$ prime, $d(p)=2$ and neither product loses any factors
+in the respective sums. Since $2\log p=O(p^{1/3}\log^2p)$,
+equation \eqref{eq:arithmetic} gives \eqref{eq:decay}, while
+\eqref{eq:shortarithmetic} gives the logarithmic estimate in
+\eqref{eq:shortdecay}. Division by
+$\sqrt p$ and exponentiation give the limit $1/2$ in
+\eqref{eq:shortdecay}.
+
+\section{The Mellin representation and the zeta series}
+For real $u>0$ with $u\notin\mathbb Z$ put
+\begin{equation}\label{eq:ell}
+\ell(u)=\log\frac{\pi u}{|\sin(\pi u)|} .
+\end{equation}
+By \eqref{eq:h}, $h(u)-\log(2\pi u)=-\ell(u)$. The definitions
+\eqref{eq:G} and \eqref{eq:A} then give
+\begin{equation}\label{eq:GAell}
+G(s)-A(s)=-\int_0^\infty\ell(u)\,u^{-s-1}\,du\qquad(0<\operatorname{Re}s<2).
+\end{equation}
+To see this, split the integral at $1$ and use
+$\int_1^\infty\log(2\pi u)u^{-s-1}\,du=\log(2\pi)/s+1/s^2$.
+Near zero the logarithm is $O(u^2)$. At infinity it is the sum
+of a logarithm and a periodic function with integrable singularities.
+More explicitly, $\int_m^{m+1}|h(u)|\,du=\int_0^1|h(u)|\,du<\infty$.
+These bounds give absolute convergence, locally uniformly for
+$0<\R s<2$, and show that \eqref{eq:G} is holomorphic for $\R s>0$.
+In the notation of Adam \cite[Theorem 2.2, definition of $I_s$]{adam},
+the specialization $(1,0,\tfrac14,1)$ gives, for $\R s>0$,
+\[
+ I_s(1,0,\tfrac14,1)
+   =-\frac12\int_1^\infty\log\bigl(4\sin^2(\pi u)\bigr)u^{-s-1}\,du
+   =-G(s).
+\]
+In particular, $\Cg=\log2+I_1(1,0,\tfrac14,1)$.
+
+\begin{theorem}[Continuation and Mellin identity]\label{thm:mellin}
+The function $A$ extends meromorphically to $\mathbb C$ by the series
+\begin{equation}\label{eq:Aseries}
+A(s)=\frac{\log(2\pi)}{s}+\frac1{s^2}+\sum_{k\ge1}\frac{\Sigma_{2k}}{k\,(2k-s)} ,
+\end{equation}
+where $\Sigma_{2k}=\sum_{m\ge1}m^{-2k}=\zeta(2k)$. The function $G$
+extends to an entire function and \eqref{eq:GAzeta} holds meromorphically
+on $\mathbb C$.
+\end{theorem}
+
+\begin{proof}
+Euler's product for the sine \cite[(4.22.1)]{dlmf} gives, for $0<u<1$,
+\[
+ -\log\frac{\sin(\pi u)}{\pi u}
+ =\sum_{m\ge1}\sum_{k\ge1}\frac{u^{2k}}{k m^{2k}}
+ =\sum_{k\ge1}\frac{\Sigma_{2k}}{k}u^{2k}.
+\]
+For $\sigma<2$ the sum of the integrals of the absolute values
+after multiplication by $u^{-s-1}$ is
+$\sum_{k\ge1}\Sigma_{2k}/[k(2k-\sigma)]<\infty$. Integration
+therefore proves \eqref{eq:Aseries}. The large-$k$ terms are
+$O(k^{-2})$ uniformly on each compact set, which gives the claimed
+meromorphic continuation. Its only poles are a double pole at $0$
+and simple poles at the positive even integers.
+
+For positive nonintegral $u$, the same sine product gives
+$-\ell(u)=\sum_{m\ge1}\log|1-u^2/m^2|$. If $1<\sigma<2$, the
+sum of the weighted absolute integrals on $(0,\infty)$ is
+\[
+ \sum_{m\ge1}m^{-\sigma}
+ \int_0^\infty |\log|1-v^2||\,v^{-\sigma-1}\,dv<\infty.
+\]
+The inner integral is finite by the $O(v^2)$ behavior at zero,
+the logarithmic singularity at $1$, and $O(\log v)$ growth at
+infinity. Termwise integration in \eqref{eq:GAell}, with $u=mv$,
+now gives $G(s)-A(s)=\zeta(s)J(s)$, where
+\[
+ J(s)=\int_0^\infty\log|1-v^2|\,v^{-s-1}\,dv
+      =\frac12\int_0^\infty\log|1-\xi|\,\xi^{-s/2-1}\,d\xi.
+\]
+Write $z=s/2$. Integration by parts on the intervals separated by
+$1-\rho$ and $1+\rho$ gives
+$J(s)=s^{-1}\operatorname{PV}\int_0^\infty \xi^{-z}/(\xi-1)\,d\xi$.
+The boundary terms at zero and infinity vanish for $0<\R z<1$,
+and the paired terms at $1\pm\rho$ are
+$O(\rho|\log\rho|)$. Substitution $\xi=1/y$ above $1$
+changes the cutoff there to $1/(1+\rho)$. Replacing it by
+$1-\rho$ changes the integral by $O(\rho)$, since the
+endpoints are $O(\rho^2)$ apart and the integrand there is
+$O(\rho^{-1})$. The principal value is
+\[
+ \int_0^1\frac{y^{z-1}-y^{-z}}{1-y}\,dy
+ =\sum_{m=0}^\infty
+       \left(\frac1{m+z}-\frac1{m+1-z}\right)
+ =\pi\cot(\pi z).
+\]
+The geometric-series integration is justified by the integrability
+of the modulus of the difference divided by $1-y$, since the
+numerator vanishes at $1$. The last equality is the partial
+fraction expansion of the cotangent \cite[(4.22.3)]{dlmf}.
+This proves \eqref{eq:GAzeta} on $1<\R s<2$.
+
+Define the continuation of $G$ by adding the right side of
+\eqref{eq:GAzeta} to \eqref{eq:Aseries}. At a positive even
+integer $2k$, the residues of the two summands are
+$-\zeta(2k)/k$ and $\zeta(2k)/k$. At a negative even integer
+the zero of $\zeta$ \cite[(25.6.4)]{dlmf} cancels the cotangent pole. The factor
+$\cot(\pi s/2)$ cancels the pole of $\zeta$ at $1$.
+At zero,
+$(\pi/s)\cot(\pi s/2)=2/s^2+O(1)$ and
+$\zeta(0)=-1/2$, $\zeta'(0)=-\log(2\pi)/2$
+\cite[(25.6.1) and (25.6.11)]{dlmf}.
+The two principal parts at zero cancel. There are no other
+possible poles. This entire function agrees with the integral
+definition of $G$ on $1<\R s<2$. Since both functions are holomorphic
+on the connected half-plane $\R s>0$, the identity theorem shows
+that they agree throughout $\R s>0$.
+\end{proof}
+
+\begin{proposition}\label{prop:zeros}
+For every non-real $s$, $G(s)=A(s)$ if and only if $\zeta(s)=0$, and the multiplicity of $s$ as a zero of $G-A$ equals its multiplicity as a zero of $\zeta$.
+The real zeros of $G-A$ are simple and occur at the odd integers
+different from $1$.
+\end{proposition}
+\begin{proof}
+For non-real $s$ the factor $(\pi/s)\cot(\pi s/2)$ in
+\eqref{eq:GAzeta} is holomorphic and nonzero, so it preserves zeros
+and their multiplicities. For real $s<0$, the functional equation
+\cite[(25.4.2)]{dlmf} gives, after cancellation of the sine factor,
+\[
+ G(s)-A(s)=\frac{(2\pi)^s}{s}\cos\frac{\pi s}{2}\,
+           \Gamma(1-s)\zeta(1-s).
+\]
+The equality holds at the negative even integers by continuation.
+Since $\Gamma(1-s)$ and $\zeta(1-s)$ are positive and finite on
+$s<0$, the only zeros there are the simple cosine zeros at the
+negative odd integers.
+
+For $0<s<1$, \eqref{eq:GAell} gives $G(s)-A(s)<0$, since
+$|\sin(\pi u)|<\pi u$ for $u>0$. For $s>1$, the Dirichlet series
+gives $\zeta(s)>0$. The cotangent factor then gives simple zeros at
+$3,5,\ldots$ and poles at the positive even integers. This covers
+all the real nonintegers as well. At $0$ there is a double pole,
+since $\zeta(0)=-1/2$ and $(\pi/s)\cot(\pi s/2)=2/s^2+O(1)$. At $1$,
+$(s-1)\zeta(s)\to1$ and $\cot(\pi s/2)=-\pi(s-1)/2+O((s-1)^3)$.
+Hence the value at $1$ is $-\pi^2/2$.
+\end{proof}
+
+\begin{theorem}\label{thm:series}
+The constant $\Cg$ satisfies
+\begin{equation}\label{eq:series}
+ \Cg=\frac{\pi^2}{2}-\log(2\pi)-1
+       -2\sum_{k=1}^{\infty}\frac{\zeta(2k)-1}{2k-1}.
+\end{equation}
+If $\Cg^{[N_C]}$ denotes the right side with $1\le k\le N_C$, then
+\begin{equation}\label{eq:tail}
+ \frac{2\bigl(\zeta(2N_C+2)-1\bigr)}{2N_C+1}
+ \le \Cg^{[N_C]}-\Cg
+ \le \frac{2\cdot4^{-N_C}}{2N_C+1}\qquad(N_C\ge1).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Equation \eqref{eq:Cint} gives $\Cg=\log2-G(1)$.
+The value of \eqref{eq:GAzeta} at $1$ gives
+$G(1)=A(1)-\pi^2/2$. Substitution of \eqref{eq:Aseries}
+therefore yields
+\[
+ \Cg=\frac{\pi^2}{2}-\log\pi-1
+         -\sum_{k\ge1}\frac{\zeta(2k)}{k(2k-1)} .
+\]
+The finite product
+$\prod_{m=2}^{m_0}(1-m^{-2})=(m_0+1)/(2m_0)$ gives
+$\sum_{k\ge1}(\zeta(2k)-1)/k=\log2$ by summing the logarithmic
+series, whose terms are nonnegative. Also
+$\sum_{k\ge1}1/[k(2k-1)]=2\log2$ by the alternating harmonic
+series. Using $1/[k(2k-1)]=2/(2k-1)-1/k$ gives \eqref{eq:series}.
+For the remainder,
+\[
+ 0<\zeta(2k)-1\le 4^{-k}+\int_2^\infty v^{-2k}\,dv\le 3\cdot 4^{-k}.
+\]
+For $k>N_C$ we have $2k-1\ge2N_C+1$ and
+$\sum_{k>N_C}3\cdot4^{-k}=4^{-N_C}$, which gives the upper bound.
+Keeping the first positive term of the remainder gives the lower
+bound. Since $\zeta(2N_C+2)-1\ge4^{-(N_C+1)}$, the remainder has
+order $4^{-N_C}/N_C$ as $N_C\to\infty$.
+\end{proof}
+
+\begin{proposition}[Elementary series and acceleration]\label{prop:hurwitz}
+The constant also satisfies
+\begin{equation}\label{eq:elementary-series}
+ \Cg=\frac{\pi^2}{2}-\log(2\pi)-1
+     -\sum_{m\ge2}\frac{1}{m}\log\frac{m+1}{m-1}.
+\end{equation}
+For any integer $M_C\ge2$, put $a=M_C+1$. Then
+\begin{equation}\label{eq:hurwitz-series}
+ \begin{aligned}
+ \Cg={}&\frac{\pi^2}{2}-\log(2\pi)-1
+        -\sum_{m=2}^{M_C}\frac{1}{m}\log\frac{m+1}{m-1}\\
+       &{}-2\sum_{k\ge1}\frac{\zeta(2k,a)}{2k-1},
+ \end{aligned}
+\end{equation}
+where $\zeta(s,a)$ is the Hurwitz zeta function. Truncating the last
+sum at $k=N_C$ gives an overestimate with remainder $R_{N_C,M_C}$
+satisfying
+\begin{equation}\label{eq:hurwitz-tail}
+ \frac{2\zeta(2N_C+2,a)}{2N_C+1}
+ \le R_{N_C,M_C}\le
+ \frac{2\zeta(2N_C+2,a)}{(2N_C+1)(1-a^{-2})}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+All terms in the double series below are nonnegative. Tonelli's
+theorem and the series for $\operatorname{artanh}$ give
+\[
+ \begin{aligned}
+ 2\sum_{k\ge1}\frac{\zeta(2k)-1}{2k-1}
+ &=2\sum_{m\ge2}\sum_{k\ge1}\frac{m^{-2k}}{2k-1}\\
+ &=2\sum_{m\ge2}\frac1m\operatorname{artanh}\frac1m
+   =\sum_{m\ge2}\frac1m\log\frac{m+1}{m-1}.
+ \end{aligned}
+\]
+The summand is $2m^{-2}+O(m^{-4})$. Keeping the terms
+$2\le m\le M_C$ in this form and using
+$\zeta(2k,a)=\sum_{m\ge a}m^{-2k}$ \cite[(25.11.1)]{dlmf}
+for the remaining terms proves \eqref{eq:hurwitz-series}.
+The first omitted term gives the lower bound in
+\eqref{eq:hurwitz-tail}. For the upper bound use
+$\zeta(2k+2,a)\le a^{-2}\zeta(2k,a)$ and sum a geometric
+series, bounding all the denominators below by $2N_C+1$.
+Finally, for $k\ge1$, the integral test gives
+\[
+ a^{-2k}\le\zeta(2k,a)\le a^{-2k}
+               \left(1+\frac{a}{2k-1}\right).
+\]
+Thus for each fixed $M_C$ the remainder has order
+$(M_C+1)^{-2N_C}/N_C$ as $N_C\to\infty$.
+\end{proof}
+
+\begin{thebibliography}{99}
+\bibitem{adam}
+A.~Adam, \emph{Generalized hypergeometric expansion related to the Hurwitz
+zeta function}, arXiv:2009.07134v1, 2020.
+\href{https://doi.org/10.48550/arXiv.2009.07134}{doi:10.48550/arXiv.2009.07134}.
+
+\bibitem{bensimhoun}
+M.~Bensimhoun, \emph{A framework for asymptotic limit problems of
+probabilistic nature}, arXiv:2404.03513v2, 2024.
+\href{https://doi.org/10.48550/arXiv.2404.03513}{doi:10.48550/arXiv.2404.03513}.
+
+\bibitem{dlmf}
+NIST Digital Library of Mathematical Functions,
+\href{https://dlmf.nist.gov/4}{Chapter 4}, \href{https://dlmf.nist.gov/5}{Chapter 5}
+and \href{https://dlmf.nist.gov/25}{Chapter 25}.
+
+\bibitem{johansson}
+F.~Johansson, \emph{Arb: efficient arbitrary-precision midpoint-radius
+interval arithmetic}, IEEE Trans. Comput. \textbf{66} (2017), 1281--1292.
+\href{https://doi.org/10.1109/TC.2017.2690633}{doi:10.1109/TC.2017.2690633}.
+
+\bibitem{saffariVaughan}
+B.~Saffari and R.~C.~Vaughan, \emph{On the fractional parts of $x/n$ and
+related sequences. II}, Ann. Inst. Fourier (Grenoble) \textbf{27}
+(1977), no.~2, 1--30.
+\href{https://doi.org/10.5802/aif.649}{doi:10.5802/aif.649}.
+\end{thebibliography}
+
+\clearpage
+\appendix
+\section{Numerical certificates}\label{app:cert}
+\subsection{Decimal enclosure for \texorpdfstring{$\Cg$}{C-g}}
+The computation retained $N_C=180$ terms of \eqref{eq:series} in
+150-decimal interval arithmetic. The even zeta values were enclosed
+using Euler's formula \cite[(25.6.2)]{dlmf},
+\[
+ \zeta(2k)=\frac{|B_{2k}|(2\pi)^{2k}}{2(2k)!}
+\]
+with exact rational Bernoulli numbers $B_{2k}$. If $[L_{180},U_{180}]$
+encloses the partial sum, the computation used the weaker error
+bound $2\cdot4^{-180}$ implied by \eqref{eq:tail}. Thus
+\[
+ \Cg\in[L_{180}-2\cdot4^{-180},U_{180}].
+\]
+The two endpoints, multiplied by $10^{100}$, have the same integer
+part $D_{100}$, whose digits are printed below. Thus
+$D_{100}\,10^{-100}\le\Cg<(D_{100}+1)10^{-100}$.
+\begin{equation}\label{eq:100digits}
+ \begin{aligned}
+  \Cg={}&0.\decfirst\\[-2pt]
+         &\phantom{0.}\decsecond\ldots .
+ \end{aligned}
+\end{equation}
+The recorded result and the calculation script are
+\texttt{certificate\_Cg\_v1.0.txt} and \texttt{verify\_Cg\_v1.0.py} in the
+accompanying files.
+
+\subsection{Kernel and Rouch\'e test for \texorpdfstring{$G$}{G}}\label{sec:rouche}
+Put
+\begin{equation}\label{eq:K}
+ \mathcal K(u)=\sum_{m\ge1}\frac{1-\cos(2\pi m u)}{m^3}.
+\end{equation}
+Its Mellin integral is
+\begin{equation}\label{eq:H}
+ H(s)=\int_1^\infty\mathcal K(u)u^{-s-3}\,du\quad(\R s>-2).
+\end{equation}
+The kernel series converges uniformly, and
+$0\le\mathcal K\le2\zeta(3)<5/2$ by the integral test starting
+at $m=2$. In particular $H$ is holomorphic on $\R s>-2$.
+
+To relate $H$ to $G$, insert a factor $\alpha^m$ in the kernel series
+for $0<\alpha<1$ and denote the resulting kernel by $\mathcal K_\alpha$.
+The logarithmic series at $\alpha e^{2\pi iu}$ gives
+$\mathcal K_\alpha''(u)=-4\pi^2\log|1-\alpha e^{2\pi iu}|$. Integration by
+parts twice against $u^{-s-1}$ on $[1,\infty)$ for $\R s>0$
+has zero boundary terms, since $\mathcal K_\alpha(1)=\mathcal K_\alpha'(1)=0$
+and the kernel and its derivative are bounded. To let $\alpha\uparrow1$,
+use uniform convergence of $\mathcal K_\alpha$ to $\mathcal K$ and,
+for $1/2\le\alpha<1$, the bounds
+\[
+ 2\sin^2(\pi u)\le |1-\alpha e^{2\pi iu}|^2
+                 =(1-\alpha)^2+4\alpha\sin^2(\pi u)\le4 .
+\]
+They give a periodic integrable majorant for the logarithm on each
+period and hence a weighted integrable majorant on $[1,\infty)$.
+We obtain
+\begin{equation}\label{eq:factor}
+ G(s)=-\frac{(s+1)(s+2)}{4\pi^2}H(s)\qquad(\R s>-2),
+\end{equation}
+where continuation to $\R s>-2$ follows by the identity theorem.
+
+Let $\mathsf M,\mathsf N,\mathsf L\ge1$ be integers and $x_b=(b+\frac12)/\mathsf L$ for $0\le b\le\mathsf L-1$. Put
+\begin{equation}\label{eq:KM}
+\mathcal K_{\mathsf M}(x)=\sum_{m=1}^{\mathsf M}\frac{1-\cos(2\pi mx)}{m^3},\qquad H_{\mathsf M,\mathsf N}(s)=\sum_{n=1}^{\mathsf N}\int_0^1\mathcal K_{\mathsf M}(x)\,(n+x)^{-s-3}\,dx,
+\end{equation}
+\begin{equation}\label{eq:HMNL}
+H_{\mathsf M,\mathsf N,\mathsf L}(s)=\frac1{\mathsf L}\sum_{n=1}^{\mathsf N}\sum_{b=0}^{\mathsf L-1}\mathcal K_{\mathsf M}(x_b)\,(n+x_b)^{-s-3}.
+\end{equation}
+Put also
+\begin{equation}\label{eq:Bdefs}
+B_0=\frac52,\qquad B_1=\frac{\pi^3}3,\qquad B_2=4\pi^2(1+\log\mathsf M),\qquad Z(\theta)=1+\frac1{\theta-1}\quad(\theta>1).
+\end{equation}
+
+For $\theta>1$ we have $\sum_{n\ge1}n^{-\theta}\le1+\int_1^\infty x^{-\theta}dx=Z(\theta)$. The functions $H_{\mathsf M,\mathsf N}$ and $H_{\mathsf M,\mathsf N,\mathsf L}$ are entire. By \eqref{eq:KM}, $0\le\mathcal K_{\mathsf M}\le B_0$, $|\mathcal K_{\mathsf M}'|\le2\pi\sum_{m\ge1}m^{-2}=B_1$ and $|\mathcal K_{\mathsf M}''|\le4\pi^2\sum_{m\le\mathsf M}1/m\le B_2$. We use the midpoint rule in the following form. If $\chi$ is a twice continuously differentiable complex function on $[0,1]$, then
+\begin{equation}\label{eq:midpoint}
+\Bigl|\int_0^1\chi(x)\,dx-\frac1{\mathsf L}\sum_{b=0}^{\mathsf L-1}\chi(x_b)\Bigr|\le\frac{\sup|\chi''|}{24\,\mathsf L^2}.
+\end{equation}
+Indeed, on the subinterval of length $1/\mathsf L$ centred at $x_b$, Taylor's formula gives $|\chi(x)-\chi(x_b)-\chi'(x_b)(x-x_b)|\le\frac12\sup|\chi''|(x-x_b)^2$, the linear term integrates to $0$, and $\int(x-x_b)^2dx=1/(12\mathsf L^3)$ over that subinterval.
+
+\begin{theorem}[Explicit error bounds]\label{thm:trunc}
+Let $\sigma=\operatorname{Re}s>-1$. Then $|H(s)-H_{\mathsf M,\mathsf N,\mathsf L}(s)|\le E_0$ and $|H'(s)-H_{\mathsf M,\mathsf N,\mathsf L}'(s)|\le E_1$, where
+\begin{equation}\label{eq:E0expr}
+\begin{aligned}
+E_0={}&\frac1{(\sigma+2)\mathsf M^2}+\frac{B_0}{(\sigma+2)(\mathsf N+1)^{\sigma+2}}\\
+&+\frac{B_2Z(\sigma+3)+2|s+3|B_1Z(\sigma+4)+|(s+3)(s+4)|B_0Z(\sigma+5)}{24\,\mathsf L^2}
+\end{aligned}
+\end{equation}
+and
+\begin{equation}\label{eq:E1expr}
+\begin{aligned}
+E_1={}&\frac1{(\sigma+2)^2\mathsf M^2}+\frac{B_0}{(\mathsf N+1)^{\sigma+2}}\Bigl(\frac{\log(\mathsf N+1)}{\sigma+2}+\frac1{(\sigma+2)^2}\Bigr)\\
+&+\frac{B_2Z(\sigma+2)+2B_1\bigl(Z(\sigma+4)+|s+3|Z(\sigma+3)\bigr)}{24\,\mathsf L^2}\\
+&+\frac{B_0\bigl(|(s+3)(s+4)|Z(\sigma+4)+|2s+7|Z(\sigma+5)\bigr)}{24\,\mathsf L^2}.
+\end{aligned}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By \eqref{eq:K} and \eqref{eq:KM}, $0\le\mathcal K-\mathcal K_{\mathsf M}\le2\sum_{m>\mathsf M}m^{-3}\le2\int_{\mathsf M}^\infty x^{-3}dx=\mathsf M^{-2}$. The difference $H-H_{\mathsf M,\mathsf N}$ is the integral of $(\mathcal K-\mathcal K_{\mathsf M})(u)u^{-s-3}$ over $1\le u\le\mathsf N+1$ plus the integral of $\mathcal K(u)u^{-s-3}$ over $u\ge\mathsf N+1$. With $\int_1^\infty u^{-\sigma-3}du=1/(\sigma+2)$, $\int_{\mathsf N+1}^\infty u^{-\sigma-3}du=(\mathsf N+1)^{-\sigma-2}/(\sigma+2)$ and $\mathcal K\le B_0$, this gives the first two terms of $E_0$. For the third, apply \eqref{eq:midpoint} to $\chi_n(x)=\mathcal K_{\mathsf M}(x)(n+x)^{-s-3}$ for $1\le n\le\mathsf N$. Its second derivative is $\mathcal K_{\mathsf M}''(n+x)^{-s-3}-2(s+3)\mathcal K_{\mathsf M}'(n+x)^{-s-4}+(s+3)(s+4)\mathcal K_{\mathsf M}(n+x)^{-s-5}$, and $|(n+x)^{-s-\theta}|\le n^{-\sigma-\theta}$ for $0\le x\le1$ and $\sigma+\theta>0$. Summing over $n$ with $\sum_nn^{-\theta}\le Z(\theta)$ gives the third term of $E_0$.
+
+For the derivative, the integrand is $-\mathcal K(u)(\log u)u^{-s-3}$.
+Integration gives, for $u_0\ge1$,
+\[
+ \int_{u_0}^\infty(\log u)u^{-\sigma-3}\,du
+ =u_0^{-\sigma-2}
+   \left(\frac{\log u_0}{\sigma+2}+\frac1{(\sigma+2)^2}\right).
+\]
+Taking $u_0=1$ and $u_0=\mathsf N+1$ gives the first two terms
+of $E_1$. For the third, apply \eqref{eq:midpoint} to
+$\chi_n(x)=-\mathcal K_{\mathsf M}(x)\log(n+x)(n+x)^{-s-3}$.
+For $u\ge1$,
+\begin{equation}\label{eq:logderivs}
+\begin{aligned}
+\frac{d}{du}\bigl[(\log u)u^{-s-3}\bigr]&=u^{-s-4}\bigl(1-(s+3)\log u\bigr),\\
+\frac{d^2}{du^2}\bigl[(\log u)u^{-s-3}\bigr]&=u^{-s-5}\bigl((s+3)(s+4)\log u-(2s+7)\bigr).
+\end{aligned}
+\end{equation}
+With $0\le\log u\le u$, the moduli of $(\log u)u^{-s-3}$ and of the two derivatives in \eqref{eq:logderivs} are at most $u^{-\sigma-2}$, $u^{-\sigma-4}+|s+3|u^{-\sigma-3}$ and $|(s+3)(s+4)|u^{-\sigma-4}+|2s+7|u^{-\sigma-5}$. These bounds decrease in $u$ because $\sigma>-1$, so on the $n$-th period they are at most their values at $u=n$. The product rule and $\sum_nn^{-\theta}\le Z(\theta)$ give the third term of $E_1$.
+\end{proof}
+
+\begin{lemma}[Second derivative]\label{lem:H2}
+If $\operatorname{Re}s\ge\sigma>-2$ with $\sigma$ real, then $|H''(s)|\le2B_0/(\sigma+2)^3$.
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:H} and $0\le\mathcal K\le B_0$, $|H''(s)|\le B_0\int_1^\infty(\log u)^2u^{-\sigma-3}du=2B_0/(\sigma+2)^3$.
+\end{proof}
+
+\begin{proposition}[Rouch\'e test for a disc]\label{prop:rouche}
+Let $s_0\in\mathbb C$ and $\varsigma>0$ with $\operatorname{Re}s_0-\varsigma>-1$. Let $\eta_0=H_{\mathsf M,\mathsf N,\mathsf L}(s_0)$ and $\eta_1=H_{\mathsf M,\mathsf N,\mathsf L}'(s_0)$, and let $E_0,E_1$ be the bounds of Theorem~\ref{thm:trunc} at $s=s_0$. If
+\begin{equation}\label{eq:rouche}
+|\eta_0|+E_0+\varsigma E_1+\frac{\varsigma^2B_0}{(\operatorname{Re}s_0-\varsigma+2)^3}<\varsigma\,|\eta_1| ,
+\end{equation}
+then $H$ has exactly one zero in the disc $|s-s_0|<\varsigma$, and it is simple. It is also a simple zero of $G$, and $G$ has no other zero in the disc.
+\end{proposition}
+
+\begin{proof}
+For $|s-s_0|=\varsigma$, Taylor's formula with integral remainder and Lemma~\ref{lem:H2} with $\sigma=\operatorname{Re}s_0-\varsigma$ give $|H(s)-H(s_0)-H'(s_0)(s-s_0)|\le\frac{\varsigma^2}2\cdot2B_0/(\operatorname{Re}s_0-\varsigma+2)^3$. By Theorem~\ref{thm:trunc}, $|H(s_0)-\eta_0|\le E_0$ and $|H'(s_0)-\eta_1|\le E_1$. Hence $|H(s)-\eta_1(s-s_0)|$ is at most the left side of \eqref{eq:rouche}, which is less than $\varsigma|\eta_1|=|\eta_1(s-s_0)|$. By Rouch\'e's theorem $H$ has in the disc as many zeros, counted with multiplicity, as the function $\eta_1(s-s_0)$, namely one. The disc lies in $\operatorname{Re}s>-1$, where the factor $(s+1)(s+2)$ of \eqref{eq:factor} does not vanish.
+\end{proof}
+
+The accompanying Rouch\'e certificate uses Arb \cite{johansson}
+at 128 bits with $\mathsf M=4000$, $\mathsf N=200$, $\mathsf L=65536$
+and radius $1/100$. Each disc below contains exactly one zero of $G$,
+counted with multiplicity. The last column gives upper bounds
+rounded upward from the certified ratios of the two sides of
+\eqref{eq:rouche}.
+\begin{center}
+\small
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+Disc & $\R s_0$ & $\I s_0$ & Rouch\'e ratio, upper bound\\
+\midrule
+1 & 1.127312874 & 15.001263432 & 0.045205\\
+2 & 0.533572290 & 21.763254707 & 0.145659\\
+3 & 0.894730810 & 25.624836921 & 0.155103\\
+4 & 0.227688021 & 30.975962723 & 0.466950\\
+5 & 0.950506780 & 33.599087545 & 0.320245\\
+6 & 0.430899874 & 38.054886210 & 0.452453\\
+\bottomrule
+\end{tabular}
+\end{center}
+The interval data and the program and log that produce them
+accompany the paper.
+
+\subsection{Nonvanishing of \texorpdfstring{$A$}{A}}
+We use the digamma series \cite[(5.7.6)]{dlmf},
+\begin{equation}\label{eq:psi}
+ \psi(z)=-\gamma+\sum_{l\ge0}\left(\frac1{l+1}-\frac1{l+z}\right)
+ \qquad(\R z>0).
+\end{equation}
+In \eqref{eq:Aseries} write $\Sigma_{2k}=1+(\Sigma_{2k}-1)$
+and put
+\begin{equation}\label{eq:Q0series}
+ Q_0(s)=\sum_{k\ge1}\frac{\Sigma_{2k}-1}{k(2k-s)}\qquad(\R s<2).
+\end{equation}
+The identity $s/[k(2k-s)]=1/(k-s/2)-1/k$ and \eqref{eq:psi}
+give
+\begin{equation}\label{eq:sA}
+ sA(s)=\log(2\pi)+\frac1s-\psi\Bigl(1-\frac s2\Bigr)-\gamma
+       +sQ_0(s)\qquad(\R s<2,\ s\ne0).
+\end{equation}
+
+\begin{lemma}[A lower bound for the real part of the digamma function]\label{lem:repsi}
+For real $x$ with $\frac12\le x\le1$ and real $y$,
+\begin{equation}\label{eq:repsi}
+\operatorname{Re}\psi(x+iy)\ge\frac12\log(x^2+y^2)-\gamma-\log2+\frac{y^2}{2x\,(x^2+y^2)} .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:psi}, $\operatorname{Re}\psi(x+iy)-\psi(x)=\sum_{l\ge0}g_\psi(l)$ with $g_\psi(\lambda)=y^2/((\lambda+x)((\lambda+x)^2+y^2))$ for $\lambda\ge0$. With $v=\lambda+x>0$ one finds
+\begin{equation}\label{eq:convex}
+\frac{d^2}{dv^2}\,\frac1{v\,(v^2+y^2)}=\frac{12v^4+6v^2y^2+2y^4}{v^3(v^2+y^2)^3}>0,
+\end{equation}
+so $g_\psi$ is convex. For a convex function the chord lies above the graph, so $\int_l^{l+1}g_\psi\le\frac12(g_\psi(l)+g_\psi(l+1))$ for every integer $l\ge0$. Summing over $l$, and using $g_\psi(\lambda)\to0$ as $\lambda\to\infty$, gives $\int_0^\infty g_\psi\le\sum_{l\ge0}g_\psi(l)-\frac12g_\psi(0)$. Since $\int_0^\infty g_\psi=\int_x^\infty y^2\,dv/(v(v^2+y^2))=\frac12\log(1+y^2/x^2)$, we obtain $\operatorname{Re}\psi(x+iy)\ge\psi(x)+\frac12\log(1+y^2/x^2)+y^2/(2x(x^2+y^2))$. Termwise differentiation of \eqref{eq:psi} for real $x>0$ gives $\frac{d}{dx}(\psi(x)-\log x)=\sum_{l\ge0}(l+x)^{-2}-\frac1x>0$, because $(l+x)^{-2}>\int_l^{l+1}(\lambda+x)^{-2}d\lambda$ and the integrals add up to $\frac1x$. By \eqref{eq:psi}, $\psi(\frac12)=-\gamma-2\sum_{l\ge0}\bigl(\frac1{2l+1}-\frac1{2l+2}\bigr)=-\gamma-2\log2$. Hence for $x\ge\frac12$ we have $\psi(x)\ge\log x+\psi(\frac12)+\log2=\log x-\gamma-\log2$, and $\log x+\frac12\log(1+y^2/x^2)=\frac12\log(x^2+y^2)$ gives \eqref{eq:repsi}.
+\end{proof}
+
+\begin{theorem}[$A$ does not vanish above height $9$]\label{thm:Anonzero}
+Let $0\le\sigma\le1$ and $|t|\ge9$, and put
+\begin{equation}\label{eq:Qbound}
+\mathcal Q(t)=\log(8\pi)-\frac12\log(1+t^2)-\frac{t^2}{2(t^2+4)}+\frac1{t^2}-0.64\,\frac{t^2-1}{t^2+4}+10^{-27} .
+\end{equation}
+Then $\operatorname{Re}\bigl(sA(s)\bigr)\le\mathcal Q(t)<0$ for $s=\sigma+it$. In particular $A(s)\ne0$.
+\end{theorem}
+
+\begin{proof}
+Since $A(\bar s)=\overline{A(s)}$ by \eqref{eq:Aseries}, we may assume $t\ge9$. We bound the real parts of the terms of \eqref{eq:sA}. First, $\operatorname{Re}(1/s)=\sigma/(\sigma^2+t^2)\le1/t^2$. Second, apply Lemma~\ref{lem:repsi} with $x=1-\frac\sigma2\in[\frac12,1]$ and $y=-\frac t2$. Then $x^2+y^2\ge\frac14(1+t^2)$, and $x\le1$, $x^2+y^2\le\frac14(4+t^2)$ give $y^2/(2x(x^2+y^2))\ge t^2/(2(t^2+4))$. Hence
+\begin{equation}\label{eq:psibound}
+-\operatorname{Re}\psi\Bigl(1-\frac s2\Bigr)-\gamma\le2\log2-\frac12\log(1+t^2)-\frac{t^2}{2(t^2+4)} .
+\end{equation}
+Third, by \eqref{eq:Q0series}, $\operatorname{Re}(sQ_0(s))=\sum_{k\ge1}\frac{\Sigma_{2k}-1}k\,\mathfrak r_k$ with
+\begin{equation}\label{eq:rhok}
+\mathfrak r_k=\operatorname{Re}\frac{s}{2k-s}=\frac{2k\sigma-\sigma^2-t^2}{(2k-\sigma)^2+t^2} .
+\end{equation}
+For $0\le\sigma\le1$ we have $2k\sigma-\sigma^2\le2k-1$, because the left side increases with $\sigma$ on $[0,1]$. For $k=1$ the numerator is at most $1-t^2<0$ and the denominator is at most $4+t^2$, so $\mathfrak r_1\le-(t^2-1)/(t^2+4)$. If $2\le k$ and $2k-1<t^2$, then $\mathfrak r_k<0$. If $2k-1\ge t^2$, then $k\ge41$ because $t^2\ge81$, and $\mathfrak r_k\le(2k-1)/(2k-1)^2=1/(2k-1)$, since the denominator is at least $(2k-1)^2$. With $\Sigma_{2k}-1\le3\cdot4^{-k}$ these terms add up to at most $\frac{3}{41\cdot81}\sum_{k\ge41}4^{-k}=4^{-40}/3321<10^{-27}$. Finally $\Sigma_2-1>\sum_{m=2}^{10}m^{-2}+\int_{11}^\infty\lambda^{-2}d\lambda>0.5497+0.0909>0.64$. Adding up, $\operatorname{Re}(sA(s))\le\mathcal Q(t)$.
+
+Each of the terms $-\frac12\log(1+t^2)$, $-\frac{t^2}{2(t^2+4)}=-\frac12+\frac2{t^2+4}$, $\frac1{t^2}$ and $-0.64\frac{t^2-1}{t^2+4}=-0.64+\frac{3.2}{t^2+4}$ decreases for $t>0$, so $\mathcal Q(t)\le\mathcal Q(9)$ for $t\ge9$. Since $e^{3.2242}>8\pi$ and $e^{4.4066}<82$, we have $\log(8\pi)<3.2242$ and $\frac12\log82>2.2033$. For these bounds one can use
+$\pi<355/113$, the lower Taylor sum through degree $20$ for
+$e^{3.2242}$, and the upper bound for $e^{4.4066}$ obtained by
+adding $\frac54(4.4066)^{31}/31!$ to the sum through degree $30$.
+The last bound follows by bounding consecutive term ratios in
+the tail by $1/5$. With $\frac{81}{170}>0.4764$, $\frac1{81}<0.0124$ and $0.64\cdot\frac{80}{85}>0.6023$ this gives $\mathcal Q(9)<3.2242-2.2033-0.4764+0.0124-0.6023+10^{-27}<-0.045$.
+\end{proof}
+
+For the bounded rectangle, the program
+\texttt{A\_nonvanishing\_check.py} uses the holomorphic function
+$s^2A(s)$, which has value $1$ at $0$ by \eqref{eq:Aseries}.
+For $c_k=\Sigma_{2k}-1$, it encloses $c_k$ by the rational
+sum $\sum_{m=2}^{40}m^{-2k}$ with a nonnegative error at most
+$40^{1-2k}/(2k-1)$ by the integral test. On $\R s\le1$ the
+part of \eqref{eq:Q0series} with $k>80$ has modulus at most
+\[
+ \frac{\sum_{k>80}3\cdot4^{-k}}{81\cdot161}
+ =\frac{4^{-80}}{81\cdot161},
+\]
+using $|2k-s|\ge 2k-1$. Multiplying \eqref{eq:sA} by $s$ gives
+the expression enclosed by the program on each box. The initial
+boxes tile $0\le\R s\le1$, $0\le\I s\le102$. Subdivision replaces
+each undecided box by four boxes covering it. A box is accepted
+when at least one of the real and imaginary enclosures excludes
+zero. The recorded run accepted $188{,}892$ boxes at a maximum
+subdivision depth of $5$, with no undecided boxes. Its smallest
+recorded lower bound for
+$\max\{|\R(s^2A(s))|,|\I(s^2A(s))|\}$ was enclosed by
+$[1.00128\cdot10^{-5}\ \pm\ 3.76\cdot10^{-11}]$.
+Thus $A$ is nonzero on the certified rectangle where $s\ne0$.
+Together with the analytic estimate and conjugation symmetry,
+this gives nonvanishing on $0\le\R s\le1$ wherever $A$ is
+holomorphic.
+
+\clearpage
+\section{Figures}\label{app:figures}
+The surface and zero-map panels are numerical
+illustrations. The six discs in Appendix~\ref{app:cert} identify
+which computed zeros of $G$ have enclosures.
+The five modulus surfaces and the zero map were regenerated for
+this version. Each red marker on a surface uses the computed modulus
+at the corresponding mesh vertex.
+On the real interval $s>-2$, \eqref{eq:H} gives $H(s)>0$,
+since $\mathcal K$ is positive off the integers. Equation
+\eqref{eq:factor} therefore gives the sign of $G$ shown in the
+real-axis plot and a simple zero at $-1$.
+
+For the period mean in the Gram plot, use the absolutely
+convergent cosine series for $\log|1-\alpha e^{2\pi i u}|$
+from the proof of \eqref{eq:factor}. The logarithmic majorant
+used there is square integrable, so these functions converge
+to $h$ in $L^2$ on a period. Their products at $x/j$ and $x/k$
+converge in $L^1$ on a common period by Cauchy--Schwarz.
+Only equal frequencies $m/j=n/k$ survive in the period mean,
+with cosine product mean $1/2$. Writing
+$(m,n)=r(j/g_{jk},k/g_{jk})$ with $r\ge1$ and $g_{jk}=\gcd(j,k)$, their
+contribution is
+\[
+ \frac12\sum_{r\ge1}\frac{g_{jk}^2}{r^2jk}
+   =\frac{\pi^2}{12}\frac{g_{jk}^2}{jk}.
+\]
+For the weighted panel the same $L^1$ convergence holds after
+summing over periods against the weight $x^{-2\sigma-1}$ on
+$[\max(j,k),\infty)$, since $\sigma>0$. Upon writing
+$x=\max(j,k)v$, the cosine product formula replaces each
+pair of modes by cosines with arguments
+$2\pi\max(j,k)(m/j\pm n/k)v$. The kernel applied to each
+frequency $\beta$ is $2\sigma\int_1^\infty
+v^{-2\sigma-1}\cos(\beta v)\,dv$. It equals $1$ at zero and
+has modulus at most $\min(1,4\sigma/|\beta|)$ otherwise, by
+integration by parts. At fixed $m$, the difference-frequency
+terms are bounded in sum by $O((1+\log m)/m^2)$: below
+$mk/(2j)$ the denominator $|mk-nj|$ is $\gg m$, above
+$2mk/j$ it is $\gg n$, and between them $n$ is comparable
+to $m$ and the nonzero $mk-nj$ are spaced by $j$.
+The equal-frequency terms contribute $O(m^{-2})$, and the
+sum-frequency terms are bounded by the same estimate using
+$mk+nj\gg m+n$. This proves absolute convergence, so the
+frequency groups can be summed before truncating for the plot.
+
+\clearpage
+\sourcefigure{.95\linewidth}{fig_kernel.png}
+ {The function $h$ on one period and the positive kernel
+ $\mathcal K(u)=\sum_{m\ge1}(1-\cos(2\pi mu))/m^3$.}
+\sourcefigure{.78\linewidth}{fig_G_real.png}{$G$ on the real axis.}
+
+\clearpage
+\sourcefigure{.87\linewidth}{fig_G_surface.png}
+ {$|G(s)|$ on a linear scale with the vertical axis inverted.
+ The red markers indicate the six computed zeros of $G$ in the certified discs.}
+\sourcefigure{.87\linewidth}{fig_A_surface.png}
+ {$|A(s)|$ on the same rectangle, with the vertical axis inverted.
+ The nonvanishing result of Appendix~\ref{app:cert} covers the part
+ with $0\le\R s\le1$.}
+
+\clearpage
+\sourcefigure{.96\linewidth}{fig_A_real_surface.png}
+ {$|A(s)|$ near the real axis, clipped above $1.5$.
+ The red markers indicate computed real zeros of $A$.}
+\sourcefigure{.87\linewidth}{fig_GminusA_surface.png}
+ {$|G(s)-A(s)|$, clipped above $0.6$, with the vertical axis inverted.}
+
+\clearpage
+\sourcefigure{.87\linewidth}{fig_zeta_surface.png}
+ {$|\zeta(s)|$, clipped above $1.5$, with the vertical axis inverted.
+ The red markers indicate the first six nontrivial zeros in the upper half-plane.}
+\sourcefigure{.78\linewidth}{fig_zero_map.png}
+ {Computed zeros of $G$, points with $G=A$, and arcs of
+ $\I(G/A)=0$ with $0<\R(G/A)<1$ where $A\ne0$.
+ The pairing shown by the arcs is a numerical observation.}
+
+\clearpage
+Let $z_b^G$ be the computed zeros of $G$ used in the plots and
+$z_b^A$ the computed real zeros of $A$. Their counts are
+$n_G=79$ and $n_A=101$. The exponential sums are
+\begin{equation}\label{eq:expsum}
+\mathcal E_G(x)=\frac1{n_G}\sum_{b=1}^{n_G}e^{ix\operatorname{Im}z^G_b},\qquad\mathcal E_A(x)=\frac1{n_A}\sum_{b=1}^{n_A}e^{ixz^A_b}.
+\end{equation}
+\sourcefigure{.70\linewidth}{fig_expsum_3d.png}
+ {The exponential sums $\mathcal E_G(x)$ and $\mathcal E_A(x)$ for
+ $0\le x\le2\pi$. The variable $x$ is the vertical axis.}
+\sourcefigure{.98\linewidth}{fig_expsum_plane.png}
+ {The two exponential sums in the complex plane and the computed zeros
+ used in the sums, with their centroids.}
+
+\clearpage
+\sourcefigure{.95\linewidth}{fig_expsum_modulus.png}
+ {Moduli of the exponential sums. The vertical lines in the upper panel
+ are at $x=\log n$ for prime powers $n\le66$.}
+\sourcefigure{.98\linewidth}{fig_gram.png}
+ {Gram matrices of $h(x/k)$ for $1\le k\le10$.
+ The first uses the mean over a common period. For the second, the
+ integral with weight $x^{-2\sigma-1}$ starts at $\max(j,k)$ and
+ is normalized by $2\sigma\max(j,k)^{2\sigma}$, with $\sigma=3/4$.}
+
+\clearpage
+\section{The vertical cut and the Python sources}\label{app:python}
+The interactive vertical cut in \texttt{G\_A\_zeta\_cut\_v2.html}
+shows $t\mapsto G(\tfrac12+it)$, $t\mapsto A(\tfrac12+it)$ and
+their difference. On the sampled range $0.5\le t\le100$ with step
+$0.01$, the accompanying output
+reports 30 local minima, of which 29 met the numerical threshold
+$|G-A|\le10^{-6}$ after refinement. The ordinates of these 29
+points agree with the corresponding computed zeta ordinates within
+$6\cdot10^{-7}$. The threshold and agreement are finite numerical
+observations. The HTML, the script, and its output accompany this
+paper.
+
+The following Python sources generate the static figures and the data
+for the vertical cut. The accompanying directory supplies
+\texttt{cp\_eval.py} and the zero lists used by the plotting programs.
+Run the four static plotting scripts in the order printed below.
+The first generates the kernel and real-axis plots.
+The vertical-cut listing uses a relative path to the evaluator.
+
+\lstinputlisting[caption={\texttt{figures\_kernel\_real.py}}]{castor_v5/figures_kernel_real.py}
+\lstinputlisting[caption={\texttt{figure\_gram.py}}]{castor_v5/figure_gram.py}
+\lstinputlisting[caption={\texttt{figures\_v4.py}}]{castor_v5/figures_v4.py}
+\lstinputlisting[caption={\texttt{expsum\_v3.py}}]{castor_v5/expsum_v3.py}
+\lstinputlisting[caption={\texttt{vertical\_cut\_portable.py}}]{castor_v5/cut_G_A_zeta/vertical_cut_portable.py}
+
+\end{document}

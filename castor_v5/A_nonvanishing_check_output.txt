@@ -1,0 +1,7 @@
+Castor and Pollux I: ball arithmetic certificate that A(s) != 0 on [0,1] x [0,102]
+python-flint 0.9.0, FLINT 3.6.0, 128 bits; K = 80 terms of E, c_k from m <= 40
+boxes accepted: 188892, largest bisection depth: 5, boxes not decided: 0
+smallest certified lower bound of max(|Re s^2 A|, |Im s^2 A|) over the accepted boxes: [1.00128e-5 +/- 3.76e-11]
+analytic part, |t| >= 102:  log(8 pi) + 1/t^2 + log 2 * sqrt(1 + 1/t^2) = [3.9174480 +/- 3.58e-8]  <  log(|t|/2) = [3.9318256 +/- 3.28e-8] : True
+RESULT: A(s) != 0 for 0 < Re s < 1 and all real Im s: CERTIFIED
+time 27.7 s
