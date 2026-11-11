@@ -21,11 +21,13 @@ Example
 C_g = 0.743794861839400544203641994634580661025264331972917222960354...
 
 References
-Victor Casaña-Giner, A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes, version 1.0 (2026).
+Víctor Casaña-Giner, A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes, Zenodo, version 1.0 (2026), doi:10.5281/zenodo.24144024.
 
 Links
-Victor Casaña-Giner, <a href="https://github.com/vcasana1/OEIS_26/releases/download/v1.0/LogSine_Constant_v1.0.pdf">A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes</a>, version 1.0 (2026), Sections 1, 3 and 4 and Appendix A.1.
-Victor Casaña-Giner, <a href="https://github.com/vcasana1/PaperMath/blob/0092616e38da579f3365cafba77b450b6a3f5fd2/castor_pollux_I/Castor_Pollux_I_v5.pdf">Castor and Pollux I</a>, version 5, 2026, background on the Mellin transforms in Propositions 14.1 and 17.1 and equation (15.2).
+Víctor Casaña-Giner, <a href="https://doi.org/10.5281/zenodo.24144024">A Log-Sine Analogue of Euler's Constant: The Decay Rate of a Sine Product at Primes</a>, Zenodo, version 1.0 (2026), Sections 3–4 and Appendix A.1.
+Víctor Casaña-Giner, <a href="https://github.com/vcasana1/OEIS_26/blob/ba3e937964fb840365641f9a3f0015e62ea48489/certificate_Cg_v1.0.txt">Certificate for the first 100 decimal digits of C_g</a>.
+Víctor Casaña-Giner, <a href="https://github.com/vcasana1/OEIS_26/blob/e55fd5bb0de07e5139f4df9d28193c943b76a826/verify_Cg_v1.0.py">Python script for reproducing the 100-digit enclosure of C_g</a>.
+Víctor Casaña-Giner, <a href="https://github.com/vcasana1/PaperMath/blob/0092616e38da579f3365cafba77b450b6a3f5fd2/castor_pollux_I/Castor_Pollux_I_v5.pdf">Castor and Pollux I</a>, version 5, 2026, background on the Mellin transforms in Propositions 14.1 and 17.1 and equation (15.2).
 Alexander Adam, <a href="https://arxiv.org/abs/2009.07134v1">Generalized hypergeometric expansion related to the Hurwitz zeta function</a>, 2020, Theorem 2.2 (definition of I_s). In that notation C_g = log(2) + I_1(1,0,1/4,1).
 
 Crossrefs
