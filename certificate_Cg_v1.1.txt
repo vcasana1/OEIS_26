@@ -1,0 +1,35 @@
+C_g decimal certificate v1.1
+Sequence A402034
+Recorded execution 2026-11-11T21:06:58+01:00
+
+Source verifier: verify_Cg_v1.0.py
+Commit of the executed source: e55fd5bb0de07e5139f4df9d28193c943b76a826
+SHA-256 of the executed file: 03c6c2d8af16984e1cb7006dba988416bb63c2ee822f51a76b5c52aa71759642
+Command: python3 verify_Cg_v1.0.py
+Environment: Python 3.14.5, mpmath 1.4.1
+Parameters: 180 terms and 150 decimal digits in the interval context.
+
+The verifier uses exact integers for the Bernoulli numerators and
+denominators and for the factorial denominator. It evaluates the
+180-term zeta series in Section 4 of the preprint and subtracts the
+one-sided tail bound 2*4^(-180) from the lower endpoint.
+
+Standard output of the corrected verifier:
+7437948618394005442036419946345806610252643319729172229603543808135540028677299838717570371013522332
+
+The exact dyadic endpoints returned by the interval evaluation were
+read and rounded outward to the following decimal enclosure:
+D + 0.078600071247 <= 10^100*C_g <= D + 0.078600079764
+where D is the 100-digit integer printed above. Both bounds have floor D.
+
+Independent interval check: python-flint 0.9.0 (FLINT
+3.6.0), at 512 bits, evaluated each even zeta value
+with arb.zeta() and applied the same analytic tail bound. The lower
+endpoint of the scaled enclosure was >= D and the upper endpoint was
+< D+1. This gives the same 100 decimal digits as the verifier and OEIS.
+
+Preprint: https://doi.org/10.5281/zenodo.24144024
+Correction to Appendix A.1: the original v1.0 archive contains an early
+verifier that rounds the factorial denominator before interval division.
+For reproduction, use the source identified above and this execution
+record. This execution reproduces all 100 decimals printed in the preprint.
