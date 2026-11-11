@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Reproduce the decimal enclosure in the paper with mpmath 1.4.1."""
 
+from math import factorial
+
 import mpmath as mp
 
 
@@ -11,10 +13,10 @@ def certified_digits():
     total = interval.mpf(0)
     for k in range(1, terms + 1):
         numerator, denominator = mp.bernfrac(2 * k)
-        factorial = mp.factorial(2 * k, exact=True)
+        divisor = 2 * int(denominator) * factorial(2 * k)
         zeta = (
-            abs(interval.mpf(numerator)) * (2 * interval.pi) ** (2 * k)
-            / (2 * denominator * factorial)
+            interval.mpf(abs(int(numerator))) * (2 * interval.pi) ** (2 * k)
+            / divisor
         )
         total += (zeta - 1) / (2 * k - 1)
 
